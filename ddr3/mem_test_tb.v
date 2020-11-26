@@ -13,12 +13,12 @@ wire rd_burst_req;                          	/*读请求*/
 wire wr_burst_req;                         		/*写请求*/
 wire[9:0] rd_burst_len;                     	/*读数据长度*/
 wire[9:0] wr_burst_len;                     	/*写数据长度*/
-wire[31:0] rd_burst_addr;        	/*读首地址*/
-wire[31:0] wr_burst_addr;    		/*写首地址*/
+wire[31:0] rd_burst_addr;        				/*读首地址*/
+wire[31:0] wr_burst_addr;    					/*写首地址*/
 reg rd_burst_data_valid;                  		/*读出数据有效*/
 reg wr_burst_data_req;                    		/*写数据信号*/
-reg[63:0] rd_burst_data;   		/*读出的数据*/
-wire[63:0] wr_burst_data;    	/*写入的数据*/
+reg[63:0] rd_burst_data;   						/*读出的数据*/
+wire[63:0] wr_burst_data;    					/*写入的数据*/
 reg rd_burst_finish;                      		/*读完成*/
 reg wr_burst_finish;                      		/*写完成*/
 
@@ -95,6 +95,7 @@ end
 
 //  trun simulation part:
 integer i;
+
 initial begin
 	#5;
 	rst = 1;
@@ -106,7 +107,7 @@ initial begin
     #2;
     pl_key1 <= 1;
     
-    for( i=0; i<20; i=i+1 ) begin
+    for( i=0; i<40; i=i+1 ) begin
 		#5 pl_key2 <= 0;
 		wr_burst_data_req <= 1;
 		rd_burst_finish <= 0;
@@ -114,15 +115,16 @@ initial begin
 		#2 pl_key2 <= 1;
 		#2 wr_burst_data_req <= 0;
 		
-		#10 pl_key3 <= 0;
+		#2 pl_key3 <= 0;
 		rd_burst_data_valid <= 1;
-		rd_burst_data <= i;
+		rd_burst_data <= {2{i}}; // mem_test中将地址作为数据写入ddr，首地址假设为0，且连续递增（这与实际情况不符，此处只是为了验证时序逻辑而做了简化）
 		#2 pl_key3 <= 1;
 		#2 rd_burst_data_valid <= 0;
 		
 		#10 pl_key4 <= 0;
 		#2;
 		pl_key4 <= 1;
+		
     end
 
 	#5;

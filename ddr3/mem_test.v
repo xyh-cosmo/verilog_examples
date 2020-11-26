@@ -43,12 +43,11 @@ module mem_test
     input rd_burst_data_valid,                  		/*读出数据有效*/
     input wr_burst_data_req,                    		/*写数据信号*/
     input[MEM_DATA_BITS - 1:0] rd_burst_data,   		/*读出的数据*/
-    output[MEM_DATA_BITS - 1:0] rd_burst_data_dbg,   		/*读出的数据*/
     output[MEM_DATA_BITS - 1:0] wr_burst_data,    		/*写入的数据*/
     input rd_burst_finish,                      		/*读完成*/
     input wr_burst_finish,                      		/*写完成*/
 
-	output [2:0] state_debug,
+	output [2:0] state_debug,		//	debug info
 	input pl_key1,
 	input pl_key2,
 	input pl_key3,
@@ -64,9 +63,6 @@ parameter MEM_ADDR	= 3'd3;
 parameter BURST_LEN = 128;
 
 parameter INI_ADDR	= 32'b0;
-
-wire k1;
-assign k1 = pl_key1;
 
 reg[2:0] state;
 assign state_debug = state;
@@ -88,10 +84,6 @@ reg[31:0] write_read_len;
  //	else if(state == MEM_READ && rd_burst_data_valid && rd_burst_data != {(MEM_DATA_BITS/8){rd_cnt}})
 // 	else if(state == MEM_READ && rd_burst_data_valid && rd_burst_data != wr_burst_data)
 // 		error <= 1'b1;
- 	else if(state == MEM_READ && rd_burst_data_valid) begin
- 		if(rd_burst_data != wr_burst_data) 
- 			error <=1'b1;
- 	end
  end
 
 // always@(posedge mem_clk or posedge rst)
@@ -144,17 +136,17 @@ begin
 		wr_burst_len <= 128;
 		// rd_burst_addr <= 'h2000000;
 		// wr_burst_addr <= 'h2000000;
-		rd_burst_addr <= 32'b0;
-		wr_burst_addr <= 32'b0;
-		write_read_len <= 32'd0;
+		rd_burst_addr <= INI_ADDR;
+		wr_burst_addr <= INI_ADDR;
+		write_read_len <= 32'd0;	// 这个测试例子中没有用到这个参数
 		wr_burst_data_reg <= {MEM_DATA_BITS{1'b0}};
 		error <= 1'b0;
 	end
 end
 
-//////////////////
-//	判断按键状态  //
-//////////////////
+////////////////////////////////////////////////////////
+//	根据PL按键来确定工作状态
+////////////////////////////////////////////////////////
 always@(posedge mem_clk or negedge pl_key1 or negedge pl_key2 or negedge pl_key3 or negedge pl_key4)
 begin
 	if( !pl_key1 ) begin
@@ -200,7 +192,7 @@ begin
 		wr_burst_len <= BURST_LEN;
 		rd_burst_req <= 1'b0;
 //		wr_burst_data_reg <= {(MEM_DATA_BITS/8){wr_cnt}};
-		wr_burst_data_reg <= wr_burst_addr;
+		wr_burst_data_reg <= {(2){wr_burst_addr}};
 	end
 end
 
@@ -210,14 +202,13 @@ begin
 	if( state == MEM_READ && rd_burst_data_valid )
 	begin
 		wr_burst_req <= 1'b0;
-		wr_burst_len <= BURST_LEN;
 //		rd_burst_req <= 1'b1;
-		// 判断读回的数与之前的数是否相同
+		if( rd_burst_data != wr_burst_data )	// 判断读回的数与之前的数是否相同(这里wr_burst_data由tb文件中传入）
+			error <= 1'b1;
 	end
 end
 
-//	PL_KEY3:读数据,将之前写入的数据读出
-//always@(posedge mem_clk )
+//	PL_KEY4:地址递增（这里假设1位、1位地递增）
 always@(posedge pl_key4 )
 begin
 	wr_burst_addr <= wr_burst_addr + 1;
