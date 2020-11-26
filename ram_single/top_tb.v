@@ -7,13 +7,14 @@ reg [5:0] addr;
 reg wr;
 reg clk;
 wire [7:0] q;
+reg [7:0] tmp;
 
 initial
 begin
 	data = 0;
 	addr = 0;
-	wr = 1;
 	clk = 0;
+	#35 wr = 1;
 end
 
 always #10 clk = ~clk;
@@ -22,6 +23,7 @@ always@(posedge clk)
 begin
 	data <= data + 1'b1;
 	addr <= addr + 1'b1;
+	tmp <= data;
 end
 
 top t0(
@@ -40,7 +42,7 @@ end
 
 initial
 begin
-	#210;
+	#510;
 	$finish;
 end
 
