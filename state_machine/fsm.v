@@ -82,7 +82,7 @@ begin
 					state <= IDLE;
 			end
 			
-			MEM_WRITE: 
+			MEM_WRITE: // 不管是否“写数据”成功，都会返回到IDLE状态
 			begin
 				if(wr_en) begin
 					wr_cnt <= wr_cnt + 8'd1;
@@ -91,7 +91,7 @@ begin
 				state <= IDLE;
 			end
 			
-			MEM_READ: 
+			MEM_READ: // 不管是否“读数据”成功，都会返回到IDLE状态
 			begin
 				if(rd_en) begin
 					rd_cnt <= rd_cnt + 8'd1;

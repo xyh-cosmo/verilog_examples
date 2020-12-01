@@ -92,15 +92,15 @@ initial begin
 	for( i=0; i<20; i=i+1)
 		begin
 			
-			if( i>5 && i <= 10 ) begin
-				wr_en <= 0;
-				rd_en <= 1;
-			end
+//			if( i>5 && i <= 10 ) begin
+//				wr_en <= 0;
+//				rd_en <= 1;
+//			end
 			
-			if( i>10 ) begin
-				wr_en <= 1;
-				rd_en <= 0;
-			end
+//			if( i>10 ) begin
+//				wr_en <= 1;
+//				rd_en <= 0;
+//			end
 		
 			key1 <= 0;
 			#1;
