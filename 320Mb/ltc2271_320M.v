@@ -1,7 +1,8 @@
 // 模拟从LTC2271以320Mb/s的速度采样，4通道（ch0...3)输入。
 // 模块内部将串行输入的4个通道数据组合成32*4大小的dout作为输出
 
-`define _DEBUG_320M_
+//`define _DEBUG_320M_
+`include "defs.v"
 
 module ltc2271_320M#(
 parameter BUF_SIZE=128

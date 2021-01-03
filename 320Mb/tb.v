@@ -1,6 +1,7 @@
 `timescale 1ns/1ps
 
-`define _DEBUG_320M_
+//`define _DEBUG_320M_
+`include "defs.v"
 
 module test_ltc2271_320M;
 
